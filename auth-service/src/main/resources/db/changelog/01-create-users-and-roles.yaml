@@ -1,0 +1,93 @@
+databaseChangeLog:
+  - changeSet:
+      id: "1"
+      author: "anurag"
+      changes:
+        - createTable:
+            schemaName: "coffee_shop"
+            tableName: "roles"
+            columns:
+              - column:
+                  name: "id"
+                  type: "BIGINT"
+                  constraints:
+                    autoIncrement: true
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: "name"
+                  type: "VARCHAR(255)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "description"
+                  type: "VARCHAR(255)"
+                  constraints:
+                    nullable: true
+  - changeSet:
+      id: "2"
+      author: "anurag"
+      changes:
+        - createTable:
+            schemaName: "coffee_shop"
+            tableName: "users"
+            columns:
+              - column:
+                  name: "id"
+                  type: "BIGINT"
+                  constraints:
+                    autoIncrement: true
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: "created_at"
+                  type: "DATETIME"
+                  constraints:
+                    nullable: true
+              - column:
+                  name: "email"
+                  type: "VARCHAR(255)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "first_name"
+                  type: "VARCHAR(255)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "is_active"
+                  type: "BIT(1)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "last_name"
+                  type: "VARCHAR(255)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "password"
+                  type: "VARCHAR(255)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "updated_at"
+                  type: "DATETIME"
+                  constraints:
+                    nullable: true
+              - column:
+                  name: "role_id"
+                  type: "BIGINT"
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            schemaName: "coffee_shop"
+            constraintName: "UK_users_email"
+            tableName: "users"
+            columnNames: "email"
+        - addForeignKeyConstraint:
+            schemaName: "coffee_shop"
+            baseTableName: "users"
+            baseColumnNames: "role_id"
+            constraintName: "FK_users_role"
+            referencedTableName: "roles"
+            referencedColumnNames: "id"
