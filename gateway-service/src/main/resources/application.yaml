@@ -25,11 +25,17 @@ spring:
           uri: lb://customer-service
           predicates:
             - Path=/user/**
+          filters:
+            - name: JwtFilter
         - id: auth-service
           uri: lb://auth-service
           predicates:
             - Path=/auth/**
 logging:
   level:
-    org.springframework.cloud.gateway: DEBUG
+    org:
+      springframework:
+        cloud:
+          gateway: ERROR
+        security: DEBUG
     reactor.netty.http.client: ERROR

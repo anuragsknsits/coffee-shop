@@ -29,47 +29,50 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
     @Override
     public GatewayFilter apply(Config config) {
-        try {
-            return ((exchange, chain) -> {
-                ServerHttpRequest request = exchange.getRequest();
-                log.info("request {} " , request.getPath());
-                if (validator.isSecured.test(request)) {
+        return (exchange, chain) -> {
+            ServerHttpRequest request = exchange.getRequest();
+            log.info("Processing request: {}", request.getPath());
 
-                    List<HttpCookie> cookies = request.getCookies().get("jwt");
-                    if (cookies == null || cookies.isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing Cookies details");
-                    }
+            if (validator.isSecured.test(request)) {
+                log.debug("Request is secured, validating JWT token...");
 
-                    String authHeader = cookies.getFirst().getValue();
-                    /*
-                     if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing authorization header");
-                    }
-                    String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-                    if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                        authHeader = authHeader.substring(7);
-                    }*/
-                    try {
-                        jwtUtil.validateToken(authHeader);
-                        List<String> roles = jwtUtil.extractClaim(authHeader, claims -> claims.get("roles", List.class));
-
-                        String path = request.getURI().getPath();
-                        List<String> requiredRoles = validator.getRolesForPath(path);
-
-                        if (requiredRoles.stream().noneMatch(roles::contains)) {
-                            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Invalid access...!");
-                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access to the application");
-                    }
+                // Extract JWT from cookies
+                List<HttpCookie> cookies = request.getCookies().get("jwt");
+                if (cookies == null || cookies.isEmpty()) {
+                    log.warn("Missing JWT cookie in the request.");
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing JWT cookie");
                 }
-                return chain.filter(exchange);
-            });
-        } catch (Exception e) {
-            System.out.println("Error");
-            throw new RuntimeException(e);
-        }
+
+                /*if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing authorization header");
+                }
+                String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    authHeader = authHeader.substring(7);
+                }*/
+                String authHeader = cookies.getFirst().getValue();
+                try {
+                    jwtUtil.validateToken(authHeader);
+                    List<String> roles = jwtUtil.extractClaim(authHeader, claims -> claims.get("roles", List.class));
+
+                    log.debug("Roles extracted from JWT: {}", roles);
+
+                    // Validate roles for the requested path
+                    String path = request.getURI().getPath();
+                    List<String> requiredRoles = validator.getRolesForPath(path);
+
+                    if (requiredRoles.stream().noneMatch(roles::contains)) {
+                        log.warn("Access denied. Required roles: {}, but user has roles: {}", requiredRoles, roles);
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
+                    }
+                } catch (Exception e) {
+                    log.error("JWT validation failed: {}", e.getMessage(), e);
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+                }
+            }
+
+            return chain.filter(exchange);
+        };
     }
 
     public static class Config {

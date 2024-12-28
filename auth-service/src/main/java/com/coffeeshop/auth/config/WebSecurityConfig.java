@@ -16,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -36,12 +35,10 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/roles", "/register", "/login", "/auth/csrf-token", "/h2-console/**")
                         .permitAll()
-                        .requestMatchers("/shop/**").hasAuthority("ADMIN")
-                        .requestMatchers("/user/**").hasAuthority("USER")
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
-                        /*.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/h2-console/**", "/auth/login"))*/
+                /*.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers("/h2-console/**", "/auth/login"))*/
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")
                         .deleteCookies("JSESSIONID", "jwt", "XSRF-TOKEN")

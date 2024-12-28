@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CoffeeShopController {
 
     @GetMapping("/nearby")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<String> getNearByShop() {
         return ResponseEntity.ok("Near the Chhatarpur");
     }

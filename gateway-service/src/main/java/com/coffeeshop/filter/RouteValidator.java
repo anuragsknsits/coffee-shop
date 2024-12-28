@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 @Component
 public class RouteValidator {
 
-    AntPathMatcher pathMatcher = new AntPathMatcher();
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     public static final List<String> openApiEndpoints = List.of(
             "/auth/register",
@@ -21,16 +21,9 @@ public class RouteValidator {
             "/eureka"
     );
 
-    /*public Predicate<ServerHttpRequest> isSecured =
-            request -> openApiEndpoints
-                    .stream()
-                    .noneMatch(uri -> request.getURI().getPath().contains(uri));*/
-
-
     private final Map<String, List<String>> rolePathMap = Map.of(
             "/shop/**", List.of("ADMIN"),
-            "/user/**", List.of("USER"),
-            "/auth/**", List.of("USER, ADMIN")
+            "/user/**", List.of("USER")
     );
 
     public List<String> getRolesForPath(String path) {
@@ -44,6 +37,5 @@ public class RouteValidator {
     public final Predicate<ServerHttpRequest> isSecured = request ->
             rolePathMap.keySet()
                     .stream()
-                    .anyMatch(path ->  pathMatcher.match(path, request.getURI().getPath()));
-
+                    .anyMatch(path -> pathMatcher.match(path, request.getURI().getPath()));
 }
