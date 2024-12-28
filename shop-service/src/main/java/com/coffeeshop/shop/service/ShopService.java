@@ -1,9 +1,10 @@
 package com.coffeeshop.shop.service;
 
 import com.coffeeshop.shop.entity.Shop;
+import com.coffeeshop.shop.model.ShopDetail;
 
 public interface ShopService {
-    Shop setupShop(Shop shop);
+    ShopDetail setupShop(Shop shop);
 
-    Shop getShop(Long id);
+    ShopDetail getShop(Long id);
 }

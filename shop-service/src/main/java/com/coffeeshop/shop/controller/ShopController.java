@@ -1,7 +1,9 @@
 package com.coffeeshop.shop.controller;
 
 import com.coffeeshop.shop.entity.Shop;
+import com.coffeeshop.shop.model.ShopDetail;
 import com.coffeeshop.shop.service.ShopService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +21,12 @@ public class ShopController {
     }
 
     @PostMapping
-    public Shop setupShop(@RequestBody Shop shop) {
-        return shopService.setupShop(shop);
+    public ResponseEntity<ShopDetail> setupShop(@RequestBody Shop shop) {
+        return ResponseEntity.ok(shopService.setupShop(shop));
     }
 
     @GetMapping("/{id}")
-    public Shop getShop(@PathVariable Long id) {
-        return shopService.getShop(id);
+    public ResponseEntity<ShopDetail> getShop(@PathVariable Long id) {
+        return ResponseEntity.ok(shopService.getShop(id));
     }
 }
