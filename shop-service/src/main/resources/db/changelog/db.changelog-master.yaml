@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changelog-shop.yaml
+  - include:
+      file: db/changelog/changelog-menu-item.yaml
+  - include:
+      file: db/changelog/changelog-customer.yaml
+  - include:
+      file: db/changelog/changelog-queue.yaml
+  - include:
+      file: db/changelog/changelog-queue-entry.yaml

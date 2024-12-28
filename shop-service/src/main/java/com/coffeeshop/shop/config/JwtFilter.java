@@ -1,6 +1,6 @@
-package com.coffeeshop.customer.config;
+package com.coffeeshop.shop.config;
 
-import com.coffeeshop.customer.util.JWTUtil;
+import com.coffeeshop.shop.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -38,27 +38,29 @@ public class JwtFilter extends OncePerRequestFilter {
                 Arrays.stream(cookies)
                         .filter(cookie -> "jwt".equals(cookie.getName()))
                         .findFirst().map(Cookie::getValue).orElse(null);
-        try {
-            String username = jwtUtil.extractUserName(jwt);
-            List<String> roles = jwtUtil.extractClaim(jwt, claims -> claims.get("roles", List.class));
+        if (!request.getServletPath().startsWith("/swagger")) {
+            try {
+                String username = jwtUtil.extractUserName(jwt);
+                List<String> roles = jwtUtil.extractClaim(jwt, claims -> claims.get("roles", List.class));
 
-            if (username != null && roles != null) {
-                List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                if (username != null && roles != null) {
+                    List<SimpleGrantedAuthority> authorities = roles.stream()
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                // Log successful authentication
-                System.out.println("Authenticated user: " + username + " with roles: " + roles);
+                    // Log successful authentication
+                    System.out.println("Authenticated user: " + username + " with roles: " + roles);
+                }
+            } catch (Exception e) {
+                // Log token validation errors
+                System.err.println("Invalid JWT token: " + e.getMessage());
             }
-        } catch (Exception e) {
-            // Log token validation errors
-            System.err.println("Invalid JWT token: " + e.getMessage());
         }
         chain.doFilter(request, response);
     }
