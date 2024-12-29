@@ -1,0 +1,42 @@
+services:
+  shop_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shop_service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/shop_service
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: MyPass!123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET: cGFzc3dvcmRAdmthZEFzc29jaWF0ZSNUcnVlQ29kZXI=
+      SPRING_PROFILES_ACTIVE: docker
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - microservice-network
+
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: MyPass!123
+      MYSQL_DATABASE: shop_service
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservice-network
+
+networks:
+  microservice-network:
+    driver: bridge
