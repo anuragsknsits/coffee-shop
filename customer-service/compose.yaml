@@ -5,14 +5,11 @@ services:
       dockerfile: Dockerfile
     container_name: customer-service
     ports:
-      - "8081:8081"
+      - "8083:8083"
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       JWT_SECRET: cGFzc3dvcmRAdmthZEFzc29jaWF0ZSNUcnVlQ29kZXI=
       SPRING_PROFILES_ACTIVE: docker
-    depends_on:
-      mysql:
-        condition: service_healthy
     networks:
       - microservice-network
 
