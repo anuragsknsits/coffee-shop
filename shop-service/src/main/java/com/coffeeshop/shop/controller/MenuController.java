@@ -1,7 +1,9 @@
 package com.coffeeshop.shop.controller;
 
 import com.coffeeshop.shop.entity.MenuItem;
+import com.coffeeshop.shop.model.MenuDetails;
 import com.coffeeshop.shop.service.MenuService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,17 +24,18 @@ public class MenuController {
     }
 
     @PostMapping("/shop/{shopId}")
-    public MenuItem addMenuItem(@PathVariable Long shopId, @RequestBody MenuItem menuItem) {
-        return menuService.addMenuItem(shopId, menuItem);
+    public ResponseEntity<MenuDetails> addMenuItem(@PathVariable Long shopId, @RequestBody MenuItem menuItem) {
+        return ResponseEntity.ok(menuService.addMenuItem(shopId, menuItem));
     }
 
     @GetMapping("/shop/{shopId}")
-    public List<MenuItem> getMenuItems(@PathVariable Long shopId) {
-        return menuService.getMenuItems(shopId);
+    public ResponseEntity<List<MenuDetails>> getMenuItems(@PathVariable Long shopId) {
+        return ResponseEntity.ok(menuService.getMenuItems(shopId));
     }
 
     @DeleteMapping("/{menuItemId}")
-    public void deleteMenuItem(@PathVariable Long menuItemId) {
+    public ResponseEntity<Void> deleteMenuItem(@PathVariable Long menuItemId) {
         menuService.deleteMenuItem(menuItemId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -31,6 +31,7 @@ public class Shop {
     private LocalTime closingTime;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<MenuItem> menu;
 
     private int numberOfQueues;

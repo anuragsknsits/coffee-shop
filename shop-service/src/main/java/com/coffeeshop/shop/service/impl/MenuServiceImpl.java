@@ -2,6 +2,7 @@ package com.coffeeshop.shop.service.impl;
 
 import com.coffeeshop.shop.entity.MenuItem;
 import com.coffeeshop.shop.entity.Shop;
+import com.coffeeshop.shop.model.MenuDetails;
 import com.coffeeshop.shop.repository.MenuItemRepository;
 import com.coffeeshop.shop.repository.ShopRepository;
 import com.coffeeshop.shop.service.MenuService;
@@ -21,17 +22,19 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public MenuItem addMenuItem(Long shopId, MenuItem menuItem) {
+    public MenuDetails addMenuItem(Long shopId, MenuItem menuItem) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new RuntimeException("Shop not found"));
         menuItem.setShop(shop);
-        return menuItemRepository.save(menuItem);
+        MenuItem menu = menuItemRepository.save(menuItem);
+        return new MenuDetails(menu);
     }
 
     @Override
-    public List<MenuItem> getMenuItems(Long shopId) {
-        return menuItemRepository.findAll().stream()
+    public List<MenuDetails> getMenuItems(Long shopId) {
+        List<MenuItem> menuItems = menuItemRepository.findAll().stream()
                 .filter(menuItem -> menuItem.getShop().getId().equals(shopId))
                 .toList();
+        return menuItems.stream().map(MenuDetails::new).toList();
     }
 
     @Override

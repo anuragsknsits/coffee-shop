@@ -1,6 +1,7 @@
 package com.coffeeshop.shop.service.impl;
 
 import com.coffeeshop.shop.entity.Queue;
+import com.coffeeshop.shop.model.QueueDetail;
 import com.coffeeshop.shop.repository.QueueEntryRepository;
 import com.coffeeshop.shop.repository.QueueRepository;
 import com.coffeeshop.shop.service.QueueService;
@@ -18,8 +19,8 @@ public class QueueServiceImpl implements QueueService {
     }
 
     @Override
-    public Queue createQueue(Queue queue) {
-        return queueRepository.save(queue);
+    public QueueDetail createQueue(Queue queue) {
+        return new QueueDetail(queueRepository.save(queue));
     }
 
     @Override

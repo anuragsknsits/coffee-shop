@@ -1,6 +1,7 @@
 package com.coffeeshop.shop.model;
 
 import com.coffeeshop.shop.entity.Shop;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,13 +27,17 @@ public class ShopDetail {
     private int numberOfQueues;
     private int maxQueueSize;
 
-    public ShopDetail(Shop shop) {
+    public ShopDetail(@NotNull Shop shop) {
         this.setId(shop.getId());
         this.setName(shop.getName());
         this.setLocation(shop.getLocation());
         this.setContactDetails(shop.getContactDetails());
         this.setOpeningTime(shop.getOpeningTime());
         this.setClosingTime(shop.getClosingTime());
-        this.setMenu(shop.getMenu().stream().map(MenuDetails::new).toList());
+        if (shop.getMenu() != null) {
+            this.setMenu(shop.getMenu().stream().map(MenuDetails::new).toList());
+        }
+        this.numberOfQueues = shop.getNumberOfQueues();
+        this.maxQueueSize = shop.getMaxQueueSize();
     }
 }

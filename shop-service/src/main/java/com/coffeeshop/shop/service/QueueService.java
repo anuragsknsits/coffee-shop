@@ -1,9 +1,10 @@
 package com.coffeeshop.shop.service;
 
 import com.coffeeshop.shop.entity.Queue;
+import com.coffeeshop.shop.model.QueueDetail;
 
 public interface QueueService {
-    Queue createQueue(Queue queue);
+    QueueDetail createQueue(Queue queue);
 
     void serviceCustomer(Long queueEntryId);
 }

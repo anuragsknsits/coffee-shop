@@ -27,6 +27,7 @@ public class Queue {
     private int queueNumber;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<QueueEntry> customers;
 
     @ManyToOne
