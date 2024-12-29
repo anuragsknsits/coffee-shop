@@ -1,5 +1,6 @@
 package com.coffeeshop.shop.entity;
 
+import com.coffeeshop.shop.model.QueueDetail;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,4 +33,13 @@ public class Queue {
 
     @ManyToOne
     private Shop shop;
+
+    public Queue(QueueDetail queue) {
+        this.id = queue.getId();
+        this.queueNumber = queue.getQueueNumber();
+        if (queue.getCustomers() != null) {
+            this.customers = queue.getCustomers().stream().map(QueueEntry::new).toList();
+        }
+        this.shop = new Shop(queue.getShop());
+    }
 }

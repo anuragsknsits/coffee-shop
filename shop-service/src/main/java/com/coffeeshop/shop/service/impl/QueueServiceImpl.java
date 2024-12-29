@@ -19,7 +19,9 @@ public class QueueServiceImpl implements QueueService {
     }
 
     @Override
-    public QueueDetail createQueue(Queue queue) {
+    public QueueDetail createQueue(QueueDetail queueDetail) {
+        Queue queue = new Queue(queueDetail);
+
         return new QueueDetail(queueRepository.save(queue));
     }
 

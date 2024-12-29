@@ -1,6 +1,5 @@
 package com.coffeeshop.shop.controller;
 
-import com.coffeeshop.shop.entity.Queue;
 import com.coffeeshop.shop.model.QueueDetail;
 import com.coffeeshop.shop.service.QueueService;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,7 @@ public class QueueController {
     }
 
     @PostMapping
-    public ResponseEntity<QueueDetail> createQueue(@RequestBody Queue queue) {
+    public ResponseEntity<QueueDetail> createQueue(@RequestBody QueueDetail queue) {
         return ResponseEntity.ok(queueService.createQueue(queue));
     }
 

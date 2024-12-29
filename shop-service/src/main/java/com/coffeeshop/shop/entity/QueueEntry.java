@@ -1,5 +1,7 @@
 package com.coffeeshop.shop.entity;
 
+import com.coffeeshop.shop.model.QueueEntryDetail;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,8 +22,14 @@ public class QueueEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Customer customer;
 
     private String orderDetails;
+
+    public QueueEntry(QueueEntryDetail queueEntry) {
+        this.id = queueEntry.getId();
+        this.customer = new Customer(queueEntry.getCustomer());
+        this.orderDetails = queueEntry.getOrderDetails();
+    }
 }

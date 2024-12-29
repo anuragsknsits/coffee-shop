@@ -1,5 +1,6 @@
 package com.coffeeshop.shop.entity;
 
+import com.coffeeshop.shop.model.MenuDetails;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,4 +26,10 @@ public class MenuItem {
 
     @ManyToOne
     private Shop shop;
+
+    public MenuItem(MenuDetails menuItem) {
+        this.setId(menuItem.getId());
+        this.setName(menuItem.getName());
+        this.setPrice(menuItem.getPrice());
+    }
 }

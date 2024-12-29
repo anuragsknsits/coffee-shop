@@ -1,11 +1,13 @@
 package com.coffeeshop.shop.entity;
 
+import com.coffeeshop.shop.model.ShopDetail;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -36,4 +38,18 @@ public class Shop {
 
     private int numberOfQueues;
     private int maxQueueSize;
+
+    public Shop(@NotNull ShopDetail shop) {
+        this.setId(shop.getId());
+        this.setName(shop.getName());
+        this.setLocation(shop.getLocation());
+        this.setContactDetails(shop.getContactDetails());
+        this.setOpeningTime(shop.getOpeningTime());
+        this.setClosingTime(shop.getClosingTime());
+        if (shop.getMenu() != null) {
+            this.setMenu(shop.getMenu().stream().map(MenuItem::new).toList());
+        }
+        this.numberOfQueues = shop.getNumberOfQueues();
+        this.maxQueueSize = shop.getMaxQueueSize();
+    }
 }

@@ -1,5 +1,6 @@
 package com.coffeeshop.shop.entity;
 
+import com.coffeeshop.shop.model.CustomerDetail;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,4 +22,10 @@ public class Customer {
 
     private String name;
     private int loyaltyScore;
+
+    public Customer(CustomerDetail customer) {
+        this.id = customer.getId();
+        this.name = customer.getName();
+        this.loyaltyScore = customer.getLoyaltyScore();
+    }
 }
