@@ -43,14 +43,14 @@ public class QueueServiceImpl implements QueueService {
         if (shop == null) {
             throw new RuntimeException("Shop Details Not found");
         }
-
+        //TODO: check order is available in shop or not.
         List<QueueEntry> queueEntries = queueDetail.getCustomers().stream().map(this::getQueueEntry).collect(Collectors.toList());
 
         queueEntryRepository.saveAll(queueEntries);
 
-        Queue queue = new Queue(queueDetail);
-
-        return new QueueDetail(queueRepository.save(queue));
+        Queue queue = queueRepository.save(new Queue(queueDetail));
+        queue.setShop(shop);
+        return new QueueDetail(queue);
     }
 
     private QueueEntry getQueueEntry(QueueEntryDetail queueEntryDetail) {
@@ -58,22 +58,44 @@ public class QueueServiceImpl implements QueueService {
         queueEntry.setId(queueEntryDetail.getId());
         queueEntry.setOrderDetails(queueEntryDetail.getOrderDetails());
         CustomerDetail customerDetail = queueEntryDetail.getCustomer();
-        if (customerDetail != null) {
-            Customer customer = customerRepository.findById(customerDetail.getId()).orElse(null);
-            if (customer == null && customerDetail.getName() != null) {
-                log.info("Customer not found for Id : {} So setting new customer for name : {} ", customerDetail.getId(), customerDetail.getName());
-                customer = new Customer();
-                customer.setName(customerDetail.getName());
-                customer.setLoyaltyScore(0);
-                customerRepository.save(customer);
-            }
-            queueEntry.setCustomer(customer);
-        }
         if (customerDetail == null) {
             throw new RuntimeException("Invalid request : Add customer information.");
         }
+        queueEntry.setCustomer(getCustomer(customerDetail));
         return queueEntry;
     }
+
+    private Customer getCustomer(CustomerDetail customerDetail) {
+        Customer customer = null;
+
+        // Try to fetch customer by ID if available
+        if (customerDetail.getId() != null) {
+            customer = customerRepository.findById(customerDetail.getId()).orElse(null);
+        }
+
+        // If customer not found, create a new one if a name is provided
+        if (customer == null) {
+            if (customerDetail.getName() == null || customerDetail.getName().isBlank()) {
+                throw new RuntimeException("Customer name is required to create a new customer");
+            }
+
+            log.info("Customer not found for Id: {}. Creating new customer with name: {}",
+                    customerDetail.getId(), customerDetail.getName());
+
+            customer = new Customer();
+            customer.setName(customerDetail.getName());
+            customer.setLoyaltyScore(0);
+        } else {
+            // If customer exists, increment the loyalty score
+            customer.setLoyaltyScore(customer.getLoyaltyScore() + 1);
+        }
+
+        // Save the customer (either newly created or updated)
+        customer = customerRepository.save(customer);
+
+        return customer;
+    }
+
 
     @Override
     public void serviceCustomer(Long queueEntryId) {
