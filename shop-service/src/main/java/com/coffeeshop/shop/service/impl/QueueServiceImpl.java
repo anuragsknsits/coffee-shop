@@ -1,6 +1,7 @@
 package com.coffeeshop.shop.service.impl;
 
 import com.coffeeshop.shop.entity.Customer;
+import com.coffeeshop.shop.entity.MenuItem;
 import com.coffeeshop.shop.entity.Queue;
 import com.coffeeshop.shop.entity.QueueEntry;
 import com.coffeeshop.shop.entity.Shop;
@@ -43,8 +44,9 @@ public class QueueServiceImpl implements QueueService {
         if (shop == null) {
             throw new RuntimeException("Shop Details Not found");
         }
-        //TODO: check order is available in shop or not.
-        List<QueueEntry> queueEntries = queueDetail.getCustomers().stream().map(this::getQueueEntry).collect(Collectors.toList());
+        List<QueueEntry> queueEntries = queueDetail.getCustomers().stream()
+                .map(queueEntryDetail -> getQueueEntry(queueEntryDetail, shop.getMenu()))
+                .collect(Collectors.toList());
 
         queueEntryRepository.saveAll(queueEntries);
 
@@ -53,9 +55,16 @@ public class QueueServiceImpl implements QueueService {
         return new QueueDetail(queue);
     }
 
-    private QueueEntry getQueueEntry(QueueEntryDetail queueEntryDetail) {
+    private QueueEntry getQueueEntry(QueueEntryDetail queueEntryDetail, List<MenuItem> menu) {
         QueueEntry queueEntry = new QueueEntry();
         queueEntry.setId(queueEntryDetail.getId());
+        // Check if the order exists in the menu (case-insensitive)
+        boolean isOrderAvailable = menu.stream()
+                .anyMatch(menuItem -> menuItem.getName().equalsIgnoreCase(queueEntryDetail.getOrderDetails()));
+
+        if (!isOrderAvailable) {
+            throw new RuntimeException("Order not available: " + queueEntryDetail.getOrderDetails());
+        }
         queueEntry.setOrderDetails(queueEntryDetail.getOrderDetails());
         CustomerDetail customerDetail = queueEntryDetail.getCustomer();
         if (customerDetail == null) {
